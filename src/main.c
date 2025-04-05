@@ -62,7 +62,7 @@ int main(void) {
         static int last_shot = 0;
         if (mouse_state & SDL_BUTTON(SDL_BUTTON_LEFT)) {
             Uint32 now = SDL_GetTicks();
-            if (now - last_shot > 200) {
+            if (now - last_shot > 300) {
                 float muzzle_offset = player.width * 1.0;
                 float muzzle_x = cx + cosf(player.angle) * muzzle_offset;
                 float muzzle_y = cy + sinf(player.angle) * muzzle_offset;
@@ -70,7 +70,6 @@ int main(void) {
                 last_shot = now;
             }
         }
-        // TESTING
         Uint32 now = SDL_GetTicks();
 
         // Count currently alive enemies
@@ -80,7 +79,7 @@ int main(void) {
         }
 
         // If enough time has passed and we have room to spawn
-        if (now - last_enemy_spawn_time > 30000 && enemies_alive < ENEMY_COUNT) {
+        if (now - last_enemy_spawn_time > 10000 && enemies_alive < ENEMY_COUNT) {
             for (int i = 0; i < ENEMY_COUNT; i++) {
                 if (!enemies[i].alive) {
                     spawn_enemy(&enemies[i]);

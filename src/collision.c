@@ -149,6 +149,7 @@ void handle_collisions(
             float dx = (enemies[j].x + 18 / 2.0f) - asteroids[i].x;
             float dy = (enemies[j].y + 18 / 2.0f) - asteroids[i].y;
             float dist_sq = dx * dx + dy * dy;
+            
             float min_dist = asteroids[i].radius + 18 / 2.0f;
 
             if (dist_sq < min_dist * min_dist) {

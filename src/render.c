@@ -35,7 +35,7 @@ void draw_player_ship(SDL_Renderer* renderer, const PlayerShip* player) {
 }
 
 void draw_asteroids(SDL_Renderer* renderer, const Asteroid asteroids[], int count) {
-    SDL_SetRenderDrawColor(renderer, 50, 150, 255, 255);
+    SDL_SetRenderDrawColor(renderer, 110, 102, 95, 255);
     for (int i = 0; i < count; i++) {
         if (!asteroids[i].alive) continue;
         for (int dy = -asteroids[i].radius; dy <= asteroids[i].radius; dy++) {
