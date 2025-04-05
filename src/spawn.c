@@ -21,6 +21,7 @@ void spawn_asteroids(Asteroid asteroids[], int count) {
         asteroids[i].alive = 1;
         asteroids[i].hits_taken = 0;
         asteroids[i].hits_required = (int)asteroids[i].radius / 4 + 2;
+        asteroids[i].being_mined = 0;
     }
 }
 

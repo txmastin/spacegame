@@ -26,6 +26,7 @@ typedef struct {
     int hits_required;
     int hits_taken;
     int alive;
+    int being_mined;
 } Asteroid;
 
 // ---- Projectile ----

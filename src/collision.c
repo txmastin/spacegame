@@ -96,11 +96,13 @@ void handle_collisions(
         for (int i = 0; i < acount; i++) {
             if (!asteroids[i].alive) continue;
 
+            asteroids[i].being_mined = 0;
             float dx = asteroids[i].x - px;
             float dy = asteroids[i].y - py;
             float dist2 = dx * dx + dy * dy;
 
             if (dist2 < 100 * 100) {
+                asteroids[i].being_mined = 1;
                 asteroids[i].hits_taken++;
                 if (asteroids[i].hits_taken >= asteroids[i].hits_required) {
                     asteroids[i].alive = 0;
@@ -150,7 +152,7 @@ void handle_collisions(
             float dy = (enemies[j].y + 18 / 2.0f) - asteroids[i].y;
             float dist_sq = dx * dx + dy * dy;
             
-            float min_dist = asteroids[i].radius + 18 / 2.0f;
+            float min_dist = asteroids[i].radius + 24 / 2.0f;
 
             if (dist_sq < min_dist * min_dist) {
                 float dist = sqrtf(dist_sq);

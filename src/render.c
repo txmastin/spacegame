@@ -34,6 +34,64 @@ void draw_player_ship(SDL_Renderer* renderer, const PlayerShip* player) {
     }
 }
 
+
+void draw_asteroids(SDL_Renderer* renderer, Asteroid asteroids[], int acount) {
+    for (int i = 0; i < acount; i++) {
+        if (!asteroids[i].alive) continue;
+
+        // Draw asteroid body
+        SDL_SetRenderDrawColor(renderer, 110, 102, 95, 255); // rocky gray
+        
+        for (int dy = -asteroids[i].radius; dy <= asteroids[i].radius; dy++) {
+            int dx = (int)sqrtf(asteroids[i].radius * asteroids[i].radius - dy * dy);
+            int cx = (int)asteroids[i].x;
+            int cy = (int)asteroids[i].y;
+            SDL_RenderDrawLine(renderer, cx - dx, cy + dy, cx + dx, cy + dy);
+        }
+
+        /*
+        SDL_FRect circle = {
+            asteroids[i].x - asteroids[i].radius,
+            asteroids[i].y - asteroids[i].radius,
+            asteroids[i].radius * 2,
+            asteroids[i].radius * 2
+        };
+
+        SDL_RenderFillRectF(renderer, &circle); // or use a circle if you have SDL_gfx
+        */
+
+
+        // Draw health bar if mining beam is active
+        if (asteroids[i].being_mined) {
+            float health_ratio = 1.0f - (float)asteroids[i].hits_taken / (float)asteroids[i].hits_required;
+            if (health_ratio < 0.0f) health_ratio = 0.0f;
+
+            float bar_width = asteroids[i].radius * 2;
+            float bar_height = 4;
+
+            SDL_FRect bar_bg = {
+                asteroids[i].x - bar_width / 2.0f,
+                asteroids[i].y - asteroids[i].radius - 10,
+                bar_width,
+                bar_height
+            };
+
+            SDL_FRect bar_fg = bar_bg;
+            bar_fg.w *= health_ratio;
+
+            // Draw background (gray)
+            SDL_SetRenderDrawColor(renderer, 60, 60, 60, 255);
+            SDL_RenderFillRectF(renderer, &bar_bg);
+
+            // Draw foreground (white)
+            SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+            SDL_RenderFillRectF(renderer, &bar_fg);
+        }
+    }
+}
+
+
+/****** old no health bar *****
 void draw_asteroids(SDL_Renderer* renderer, const Asteroid asteroids[], int count) {
     SDL_SetRenderDrawColor(renderer, 110, 102, 95, 255);
     for (int i = 0; i < count; i++) {
@@ -46,6 +104,8 @@ void draw_asteroids(SDL_Renderer* renderer, const Asteroid asteroids[], int coun
         }
     }
 }
+*/
+
 
 void draw_projectiles(SDL_Renderer* renderer, const Projectile projectiles[], int count) {
     for (int i = 0; i < count; i++) {
