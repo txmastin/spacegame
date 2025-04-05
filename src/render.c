@@ -81,14 +81,39 @@ void draw_projectiles(SDL_Renderer* renderer, const Projectile projectiles[], in
     }
 }
 
+void draw_enemy(SDL_Renderer* renderer, const Enemy* enemy) {
+    if (!enemy->alive) return;
 
+    float x = enemy->x;
+    float y = enemy->y;
+    float angle = enemy->angle;
 
+    float size = 10.0f;
+
+    // Calculate triangle points
+    float tip_x = x + cosf(angle) * size;
+    float tip_y = y + sinf(angle) * size;
+
+    float left_x = x + cosf(angle + 2.5f) * size;
+    float left_y = y + sinf(angle + 2.5f) * size;
+
+    float right_x = x + cosf(angle - 2.5f) * size;
+    float right_y = y + sinf(angle - 2.5f) * size;
+
+    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+    SDL_RenderDrawLineF(renderer, tip_x, tip_y, left_x, left_y);
+    SDL_RenderDrawLineF(renderer, left_x, left_y, right_x, right_y);
+    SDL_RenderDrawLineF(renderer, right_x, right_y, tip_x, tip_y);
+}
+
+/***** Old rectangle *****
 void draw_enemy(SDL_Renderer* renderer, const Enemy* enemy) {
     if (!enemy->alive) return;
     SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
     SDL_Rect rect = { (int)enemy->x - 10, (int)enemy->y - 10, 20, 20 };
     SDL_RenderFillRect(renderer, &rect);
 }
+*/
 
 void draw_mining_beam(SDL_Renderer* renderer, const PlayerShip* player, const Asteroid asteroids[], int count) {
     float px = player->x + player->width / 2.0f;

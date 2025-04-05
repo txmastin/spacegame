@@ -136,6 +136,10 @@ void update_enemy(Enemy* enemy, const PlayerShip* player, Projectile projectiles
         enemy->vx *= 0.95f;
         enemy->vy *= 0.95f;
     }
+    
+    if (enemy->vx != 0 || enemy->vy != 0) {
+        enemy->angle = atan2f(enemy->vy, enemy->vx);
+    }
 
     // Apply motion
     enemy->x += enemy->vx;

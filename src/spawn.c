@@ -44,7 +44,7 @@ void spawn_enemy(Enemy* e) {
             e->y = rand() % 1080;
             break;
     } 
-
+    e->angle = 0.0f;
     e->vx = 0;
     e->vy = 0;
     e->speed = 0.5f + ((float)(rand() % 200) / 100.f);

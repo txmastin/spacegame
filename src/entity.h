@@ -41,6 +41,7 @@ typedef struct {
 typedef struct {
     float x, y;
     float vx, vy;
+    float angle;
     float speed;
     Uint32 last_shot_time;
     int alive;
