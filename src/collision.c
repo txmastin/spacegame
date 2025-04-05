@@ -30,10 +30,12 @@ void handle_collisions(
         player->height
     };
 
-    // Player hit by projectile
+    // Projectile logic
     for (int i = 0; i < pcount; i++) {
-        if (!projectiles[i].alive || projectiles[i].owner != 1) continue;
-        if (check_collision_circle_rect(projectiles[i].x, projectiles[i].y, 2.0f, player_rect)) {
+        if (!projectiles[i].alive) continue;
+
+        // Player hit by projectile
+        if (projectiles[i].owner == 1 && check_collision_circle_rect(projectiles[i].x, projectiles[i].y, 2.0f, player_rect)) {
             SDL_Delay(1000);
 
             player->x = (1920 - player->width) / 2.0f;
@@ -48,15 +50,10 @@ void handle_collisions(
             }
             
             spawn_asteroids(asteroids, acount);
-            //spawn_enemies(enemies, ecount);
             return;
         }
-    }
 
-    // Projectiles hit asteroids (but don't damage them)
-    for (int i = 0; i < pcount; i++) {
-        if (!projectiles[i].alive) continue;
-
+        // Projectiles hit asteroids (but don't damage them)
         for (int j = 0; j < acount; j++) {
             if (!asteroids[j].alive) continue;
 
@@ -65,6 +62,26 @@ void handle_collisions(
                 projectiles[i].x, projectiles[i].y)) {
                 projectiles[i].alive = 0;
                 break;
+            }
+        }
+    
+        // Projectile hits enemy
+        
+        if (projectiles[i].alive && projectiles[i].owner == 0) {
+            for (int j = 0; j < ecount; j++) {
+                if (!enemies[j].alive) continue;
+
+                float dx = enemies[j].x - projectiles[i].x;
+                float dy = enemies[j].y - projectiles[i].y;
+                float dist2 = dx * dx + dy * dy;
+
+                float hit_radius = 16.0f;  // slightly larger than enemy sprite
+
+                if (dist2 < hit_radius * hit_radius) {
+                    enemies[j].alive = 0;
+                    projectiles[i].alive = 0;
+                    break;
+                }
             }
         }
     }
@@ -91,10 +108,12 @@ void handle_collisions(
             }
         }
     }
-    // Player-asteroid elastic collision
+   
+    // Asteroid logic
     for (int i = 0; i < acount; i++) {
         if (!asteroids[i].alive) continue;
 
+        // Player-asteroid elastic collision
         float dx = (player->x + player->width / 2.0f) - asteroids[i].x;
         float dy = (player->y + player->height / 2.0f) - asteroids[i].y;
         float dist_sq = dx * dx + dy * dy;
@@ -122,11 +141,8 @@ void handle_collisions(
                 asteroids[i].vy += 0.1f * impulse * ny;
             }
         }
-    }
-     // Enemy-asteroid elastic collision
-    for (int i = 0; i < acount; i++) {
-        if (!asteroids[i].alive) continue;
-        
+         
+        // Enemy-asteroid elastic collision
         for(int j = 0; j < ecount; j++) {
             if (!enemies[j].alive) continue;
 
@@ -158,28 +174,66 @@ void handle_collisions(
                 }
             }
         }
-    }
-    
-    // Projectiles hitting enemies
-    for (int i = 0; i < pcount; i++) {
-        if (!projectiles[i].alive || projectiles[i].owner == 1) continue;
 
-        for (int j = 0; j < ecount; j++) {
-            if (!enemies[j].alive) continue;
+        // collision between asteroids 
+        for (int j = i + 1; j < acount; j++) {
+            if (!asteroids[j].alive) continue;
 
-            float dx = enemies[j].x - projectiles[i].x;
-            float dy = enemies[j].y - projectiles[i].y;
+            float dx = asteroids[j].x - asteroids[i].x;
+            float dy = asteroids[j].y - asteroids[i].y;
             float dist2 = dx * dx + dy * dy;
+            float rsum = asteroids[i].radius + asteroids[j].radius;
 
-            float hit_radius = 16.0f;  // slightly larger than enemy sprite
+            if (dist2 < rsum * rsum && dist2 > 0.01f) {
+                float dist = sqrtf(dist2);
+                float nx = dx / dist;
+                float ny = dy / dist;
 
-            if (dist2 < hit_radius * hit_radius) {
-                enemies[j].alive = 0;
-                projectiles[i].alive = 0;
-                break;
+                // Simple elastic velocity exchange along normal
+                float dvx = asteroids[j].vx - asteroids[i].vx;
+                float dvy = asteroids[j].vy - asteroids[i].vy;
+                float dot = dvx * nx + dvy * ny;
+
+                if (dot < 0) {
+                    // --- Mass-based elastic impulse ---
+                    float mass_i = asteroids[i].radius;
+                    float mass_j = asteroids[j].radius;
+                    float total_mass = mass_i + mass_j;
+
+                    // Classic elastic collision response
+                    float impulse = (-0.01f * dot) / total_mass;
+
+                    asteroids[i].vx -= impulse * mass_j * nx;
+                    asteroids[i].vy -= impulse * mass_j * ny;
+                    asteroids[j].vx += impulse * mass_i * nx;
+                    asteroids[j].vy += impulse * mass_i * ny;
+                }
+                if (rsum - dist > 1.0f) {
+                    float overlap = 0.1f * (rsum - dist);  // even smaller push
+                    asteroids[i].x -= nx * overlap;
+                    asteroids[i].y -= ny * overlap;
+                    asteroids[j].x += nx * overlap;
+                    asteroids[j].y += ny * overlap;
+                }
             }
         }
-    }
+        
+        // check if asteroids hit edge of screen
+        if (asteroids[i].x - asteroids[i].radius < 0) {
+            asteroids[i].x = asteroids[i].radius;
+            asteroids[i].vx *= -1;
+        } else if (asteroids[i].x + asteroids[i].radius > 1920) {
+            asteroids[i].x = 1920 - asteroids[i].radius;
+            asteroids[i].vx *= -1;
+        }
 
+        if (asteroids[i].y - asteroids[i].radius < 0) {
+            asteroids[i].y = asteroids[i].radius;
+            asteroids[i].vy *= -1;
+        } else if (asteroids[i].y + asteroids[i].radius > 1080) {
+            asteroids[i].y = 1080 - asteroids[i].radius;
+            asteroids[i].vy *= -1;
+        }
+    }
 }
 
