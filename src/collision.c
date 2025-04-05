@@ -41,7 +41,8 @@ void handle_collisions(
             player->x = (1920 - player->width) / 2.0f;
             player->y = (1080 - player->height) / 2.0f;
             player->vx = player->vy = player->ax = player->ay = 0;
-
+            player->material_collected = 0;
+            player->pirates_eliminated =0;
             for (int j = 0; j < pcount; j++) {
                 projectiles[j].alive = 0;
             }
@@ -80,6 +81,7 @@ void handle_collisions(
                 if (dist2 < hit_radius * hit_radius) {
                     enemies[j].alive = 0;
                     projectiles[i].alive = 0;
+                    player->pirates_eliminated += 1;
                     break;
                 }
             }
@@ -106,6 +108,7 @@ void handle_collisions(
                 asteroids[i].hits_taken++;
                 if (asteroids[i].hits_taken >= asteroids[i].hits_required) {
                     asteroids[i].alive = 0;
+                    player->material_collected += (int)(asteroids[i].radius * 5.0f);
                 }
             }
         }

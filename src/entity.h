@@ -16,6 +16,8 @@ typedef struct {
     float thrust;
     float damping;
     float angle;
+    int material_collected;
+    int pirates_eliminated;
 } PlayerShip;
 
 // ---- Asteroid ----

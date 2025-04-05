@@ -1,4 +1,5 @@
 #include <SDL2/SDL.h>
+#include <SDL_ttf.h>
 #include <math.h>
 #include <stdio.h>
 
@@ -8,13 +9,26 @@
 #include "spawn.h"
 #include "projectile.h"
 #include "collision.h"
+#include "ui.h"
 
 int main(void) {
     SDL_Init(SDL_INIT_VIDEO);
+    
+    if(TTF_Init() < 0) {
+        fprintf(stderr,"Failed to initialize SDL_ttf: %s\n", TTF_GetError());
+    }
+
     SDL_Window* window = SDL_CreateWindow("Space Game",
         SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
         SCREEN_WIDTH, SCREEN_HEIGHT, 0);
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+ 
+    TTF_Font* font = TTF_OpenFont("assets/fonts/VCR_OSD_MONO_1.001.ttf", 24);
+        if (!font) {
+        fprintf(stderr, "Failed to load font: %s\n", TTF_GetError());
+        return 1;
+    }
 
     PlayerShip player = {
         .width = 25,
@@ -24,7 +38,9 @@ int main(void) {
         .vx = 0, .vy = 0, .ax = 0, .ay = 0,
         .thrust = 0.1f,
         .damping = 0.95f,
-        .angle = 0.0f
+        .angle = 0.0f,
+        .material_collected = 0,
+        .pirates_eliminated =0
     };
     
     Uint32 last_enemy_spawn_time = 0;
@@ -98,6 +114,8 @@ int main(void) {
         now = SDL_GetTicks();
         handle_collisions(&player, projectiles, MAX_PROJECTILES, asteroids, ASTEROID_COUNT, enemies, ENEMY_COUNT, now);
         update_asteroids(asteroids, ASTEROID_COUNT); 
+
+
         // Rendering
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
@@ -109,6 +127,46 @@ int main(void) {
         draw_projectiles(renderer, projectiles, MAX_PROJECTILES);
         draw_mining_beam(renderer, &player, asteroids, ASTEROID_COUNT);
 
+        draw_ui_box(renderer, font, &player);
+        /*
+        // Text rendering:
+        char buffer[64];
+        sprintf(buffer, "Material Collected: %d", player.material_collected);
+
+        SDL_Color color = { 255, 255, 255, 255 };
+        SDL_Surface* surface = TTF_RenderText_Solid(font, buffer, color);
+        SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+
+        int padding = 8;
+        SDL_Rect text_rect = { 0 };
+        text_rect.x = 10 + padding;
+        text_rect.y = 10 + padding;
+        text_rect.w = surface->w;
+        text_rect.h = surface->h;
+
+        // Background box (black)
+        SDL_Rect bg_rect = {
+            text_rect.x - padding,
+            text_rect.y - padding,
+            text_rect.w + padding * 2,
+            text_rect.h + padding * 2
+        };
+
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 60); 
+        SDL_RenderFillRect(renderer, &bg_rect);
+
+        // Border (white)
+        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+        SDL_RenderDrawRect(renderer, &bg_rect);
+
+        // Draw text
+        SDL_RenderCopy(renderer, texture, NULL, &text_rect);
+
+        // Cleanup
+        SDL_FreeSurface(surface);
+        SDL_DestroyTexture(texture);
+        */
+
         SDL_RenderPresent(renderer);
 
         // Frame delay
@@ -119,6 +177,9 @@ int main(void) {
 
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
+
+    TTF_CloseFont(font);
+    TTF_Quit();
     SDL_Quit();
     return 0;
 }
