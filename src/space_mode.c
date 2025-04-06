@@ -13,6 +13,20 @@ static Star stars[STAR_COUNT];
 
 static Uint32 last_enemy_spawn_time = 0;
 
+static Uint32 space_mode_start_time = 0;
+static const Uint32 SPACE_MODE_DURATION_MS = 5 * 60 * 1000;
+
+void start_space_mode() {
+    space_mode_start_time = SDL_GetTicks();
+}
+
+Uint32 get_space_mode_time_remaining() {
+    Uint32 now = SDL_GetTicks();
+    Uint32 elapsed = now - space_mode_start_time;
+    return (elapsed >= SPACE_MODE_DURATION_MS) ? 0 : (SPACE_MODE_DURATION_MS - elapsed);
+}
+
+
 void init_space_mode(PlayerShip* player) {
     *player = (PlayerShip){
         .width = 25, .height = 15,

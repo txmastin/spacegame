@@ -37,19 +37,31 @@ int main(void) {
     init_space_mode(&player);  // initializes asteroids, enemies, player, etc.
 
     Uint32 last_time = SDL_GetTicks();
+    const Uint8* keystate = SDL_GetKeyboardState(NULL);
+    Uint8 prev_keystate[SDL_NUM_SCANCODES] = {0};
 
     while (running) {
         SDL_Event event;
-        const Uint8* keystate = SDL_GetKeyboardState(NULL);
 
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) running = 0;
         }
 
-        if (keystate[SDL_SCANCODE_RETURN]) {
-            current_mode = (current_mode == MODE_STATION) ? MODE_SPACE : MODE_STATION;
-        }
+        SDL_PumpEvents();  // updates key state before checking keys
 
+        keystate = SDL_GetKeyboardState(NULL); // get updated key state
+        
+        if (keystate[SDL_SCANCODE_RETURN] && !prev_keystate[SDL_SCANCODE_RETURN]) {
+            if (current_mode == MODE_STATION) {
+                start_space_mode();  // new function
+                current_mode = MODE_SPACE;
+            } else {
+                current_mode = MODE_STATION;
+            }
+        }
+        
+        SDL_memcpy(prev_keystate, keystate, SDL_NUM_SCANCODES); // store old
+        
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
 
