@@ -52,10 +52,19 @@ void move_player_ship(PlayerShip* player, const Uint8* keystate) {
 void update_asteroids(Asteroid asteroids[], int count) {
     for (int i = 0; i < count; i++) {
         if (!asteroids[i].alive) continue;
+
         asteroids[i].x += asteroids[i].vx;
         asteroids[i].y += asteroids[i].vy;
+
+        // Despawn if fully offscreen (with small buffer)
+        float r = asteroids[i].radius;
+        if (asteroids[i].x + r < -50 || asteroids[i].x - r > SCREEN_WIDTH + 50 ||
+            asteroids[i].y + r < -50 || asteroids[i].y - r > SCREEN_HEIGHT + 50) {
+            asteroids[i].alive = 0;
+        }
     }
 }
+
 
 void update_enemy(Enemy* enemy, const PlayerShip* player, Projectile projectiles[], int max_projectiles) {
     if (!enemy->alive) return;

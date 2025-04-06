@@ -78,6 +78,16 @@ void update_space_mode(PlayerShip* player, SDL_Renderer* renderer, const Uint8* 
             }
         }
     }
+    
+    // Asteroid spawn logic
+    for (int i = 0; i < ASTEROID_COUNT; i++) {
+        if (!asteroids[i].alive) {
+            spawn_asteroid(&asteroids[i]);
+            break;
+        }
+    }
+
+
 
     move_player_ship(player, keystate);
     update_enemies(enemies, ENEMY_COUNT, player, projectiles, MAX_PROJECTILES);

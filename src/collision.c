@@ -50,7 +50,6 @@ void handle_collisions(
                 enemies[j].alive = 0;
             }
             
-            spawn_asteroids(asteroids, acount);
             return;
         }
 
@@ -223,7 +222,7 @@ void handle_collisions(
                 }
             }
         }
-        
+        /* 
         // check if asteroids hit edge of screen
         if (asteroids[i].x - asteroids[i].radius < 0) {
             asteroids[i].x = asteroids[i].radius;
@@ -240,6 +239,7 @@ void handle_collisions(
             asteroids[i].y = 1080 - asteroids[i].radius;
             asteroids[i].vy *= -1;
         }
+        */
     }
 }
 
