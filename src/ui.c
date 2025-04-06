@@ -7,14 +7,15 @@ void draw_ui_box(SDL_Renderer* renderer, TTF_Font* font, const PlayerShip* playe
     char buffer2[64];
     char buffer3[64];
 
-    sprintf(buffer1, "Material Collected: %d", player->material_collected);
-    sprintf(buffer2, "Pirates Eliminated: %d", player->pirates_eliminated);
-
     Uint32 ms_remaining = get_space_mode_time_remaining();
     int seconds = ms_remaining / 1000;
     int minutes = seconds / 60;
     seconds = seconds % 60;
-    sprintf(buffer3, "Time Remaining: %d:%02d", minutes, seconds);
+
+    sprintf(buffer1, "Time Remaining: %d:%02d", minutes, seconds);
+    sprintf(buffer2, "Material Mined: %d", player->material_collected);
+    sprintf(buffer3, "Pirates killed: %d", player->pirates_eliminated);
+
 
     SDL_Color color = { 255, 255, 255, 255 };
     SDL_Surface* surface1 = TTF_RenderText_Solid(font, buffer1, color);
