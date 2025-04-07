@@ -1,6 +1,8 @@
 #include "render.h"
 #include <math.h>
 
+#define M_PI 3.1415926535
+
 void draw_stars(SDL_Renderer* renderer, const Star stars[], int count) {
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); // White
 
@@ -49,27 +51,19 @@ void draw_asteroids(SDL_Renderer* renderer, Asteroid asteroids[], int acount) {
     for (int i = 0; i < acount; i++) {
         if (!asteroids[i].alive) continue;
 
-        // Draw asteroid body
-        SDL_SetRenderDrawColor(renderer, 110, 102, 95, 255); // rocky gray
-        
-        for (int dy = -asteroids[i].radius; dy <= asteroids[i].radius; dy++) {
-            int dx = (int)sqrtf(asteroids[i].radius * asteroids[i].radius - dy * dy);
-            int cx = (int)asteroids[i].x;
-            int cy = (int)asteroids[i].y;
-            SDL_RenderDrawLine(renderer, cx - dx, cy + dy, cx + dx, cy + dy);
+        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+
+        // Draw jagged outline
+        for (int j = 0; j < asteroids[i].vertex_count; j++) {
+            int next = (j + 1) % asteroids[i].vertex_count;
+            SDL_RenderDrawLineF(
+                renderer,
+                asteroids[i].x + asteroids[i].outline[j].x,
+                asteroids[i].y + asteroids[i].outline[j].y,
+                asteroids[i].x + asteroids[i].outline[next].x,
+                asteroids[i].y + asteroids[i].outline[next].y
+            );
         }
-
-        /*
-        SDL_FRect circle = {
-            asteroids[i].x - asteroids[i].radius,
-            asteroids[i].y - asteroids[i].radius,
-            asteroids[i].radius * 2,
-            asteroids[i].radius * 2
-        };
-
-        SDL_RenderFillRectF(renderer, &circle); // or use a circle if you have SDL_gfx
-        */
-
 
         // Draw health bar if mining beam is active
         if (asteroids[i].being_mined) {
@@ -154,26 +148,48 @@ void draw_projectiles(SDL_Renderer* renderer, const Projectile projectiles[], in
 void draw_enemy(SDL_Renderer* renderer, const Enemy* enemy) {
     if (!enemy->alive) return;
 
-    float x = enemy->x;
-    float y = enemy->y;
-    float angle = enemy->angle;
+    if (enemy->type == ENEMY_SPIRAL) {
+        SDL_SetRenderDrawColor(renderer, 50, 100, 255, 255);
 
-    float size = 10.0f;
+        const int sides = 8;
+        const float radius = 24.0f;
+        float cx = enemy->x;
+        float cy = enemy->y;
 
-    // Calculate triangle points
-    float tip_x = x + cosf(angle) * size;
-    float tip_y = y + sinf(angle) * size;
+        for (int i = 0; i < sides; i++) {
+            float a1 = 2 * M_PI * i / sides;
+            float a2 = 2 * M_PI * (i + 1) / sides;
+            SDL_RenderDrawLineF(
+                renderer,
+                cx + cosf(a1) * radius, cy + sinf(a1) * radius,
+                cx + cosf(a2) * radius, cy + sinf(a2) * radius
+            );
+        }
+    }
+    else {
 
-    float left_x = x + cosf(angle + 2.5f) * size;
-    float left_y = y + sinf(angle + 2.5f) * size;
 
-    float right_x = x + cosf(angle - 2.5f) * size;
-    float right_y = y + sinf(angle - 2.5f) * size;
+        float x = enemy->x;
+        float y = enemy->y;
+        float angle = enemy->angle;
 
-    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-    SDL_RenderDrawLineF(renderer, tip_x, tip_y, left_x, left_y);
-    SDL_RenderDrawLineF(renderer, left_x, left_y, right_x, right_y);
-    SDL_RenderDrawLineF(renderer, right_x, right_y, tip_x, tip_y);
+        float size = 10.0f;
+
+        // Calculate triangle points
+        float tip_x = x + cosf(angle) * size;
+        float tip_y = y + sinf(angle) * size;
+
+        float left_x = x + cosf(angle + 2.5f) * size;
+        float left_y = y + sinf(angle + 2.5f) * size;
+
+        float right_x = x + cosf(angle - 2.5f) * size;
+        float right_y = y + sinf(angle - 2.5f) * size;
+
+        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+        SDL_RenderDrawLineF(renderer, tip_x, tip_y, left_x, left_y);
+        SDL_RenderDrawLineF(renderer, left_x, left_y, right_x, right_y);
+        SDL_RenderDrawLineF(renderer, right_x, right_y, tip_x, tip_y);
+    }
 }
 
 /***** Old rectangle *****

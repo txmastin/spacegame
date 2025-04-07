@@ -69,6 +69,9 @@ int main(void) {
             update_station_mode(keystate);
             draw_station_mode(renderer);
         } else if (current_mode == MODE_SPACE) {
+            if (get_space_mode_time_remaining() == 0)
+                current_mode = MODE_STATION;
+            else
             update_space_mode(&player, renderer, keystate, font);
         }
 

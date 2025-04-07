@@ -29,6 +29,9 @@ typedef struct {
 } PlayerShip;
 
 /****** Asteroid ******/
+
+#define ASTEROID_MAX_VERTICES 16
+
 typedef struct {
     float x, y;
     float vx, vy;
@@ -36,6 +39,8 @@ typedef struct {
     int hits_required;
     int hits_taken;
     int alive;
+    int vertex_count;
+    SDL_FPoint outline[ASTEROID_MAX_VERTICES];
     int being_mined;
 } Asteroid;
 
@@ -48,7 +53,13 @@ typedef struct {
     int owner;
 } Projectile;
 
+
 /****** Enemy ******/
+typedef enum {
+    ENEMY_BASIC,
+    ENEMY_SPIRAL
+} EnemyType;
+
 typedef struct {
     float x, y;
     float vx, vy;
@@ -57,6 +68,7 @@ typedef struct {
     Uint32 last_shot_time;
     int alive;
     float jitter_angle;
+    EnemyType type;
 } Enemy;
 
 #endif

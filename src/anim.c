@@ -69,6 +69,21 @@ void update_asteroids(Asteroid asteroids[], int count) {
 void update_enemy(Enemy* enemy, const PlayerShip* player, Projectile projectiles[], int max_projectiles) {
     if (!enemy->alive) return;
 
+    if (enemy->type == ENEMY_SPIRAL) {
+        enemy->x += enemy->vx;
+        enemy->y += enemy->vy;
+
+        Uint32 now = SDL_GetTicks();
+        if (now - enemy->last_shot_time >= 150) {
+            float angle = enemy->angle;
+            spawn_projectile(projectiles, enemy->x, enemy->y, angle, 1);
+            enemy->angle += 0.4f;  // spiral speed
+            enemy->last_shot_time = now;
+        }
+        return;
+    }
+
+
     // Distance from enemy to center of player
     float px = player->x + player->width / 2.0f;
     float py = player->y + player->height / 2.0f;

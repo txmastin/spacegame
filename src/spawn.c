@@ -34,7 +34,18 @@ void spawn_streak_stars(StreakStar stars[], int count) {
     }
 }
 
+void generate_asteroid_outline(Asteroid* a) {
+    a->vertex_count = ASTEROID_MAX_VERTICES;
+    float step = 2 * M_PI / a->vertex_count;
 
+    for (int i = 0; i < a->vertex_count; i++) {
+        float angle = i * step;
+        float noise = 0.7f + ((rand() % 30) / 100.0f);  // random between 0.7 - 1.0
+        float r = a->radius * noise;
+        a->outline[i].x = cosf(angle) * r;
+        a->outline[i].y = sinf(angle) * r;
+    }
+}
 
 void spawn_asteroid(Asteroid* a) {
     int edge = rand() % 4;
@@ -60,6 +71,8 @@ void spawn_asteroid(Asteroid* a) {
     }
 
     a->radius = 20 + rand() % 30;
+    generate_asteroid_outline(a);    
+
     float angle = (rand() % 360) * M_PI / 180.0f;
     float speed = 0.2f + (rand() % (70 - (int)(a->radius))) / 100.0f;
     a->vx = cosf(angle) * speed;
@@ -76,6 +89,7 @@ void spawn_asteroids(Asteroid asteroids[], int count) {
 
     for (int i = 0; i < (count-10); i++) {
         asteroids[i].radius = 20 + rand() % 30;
+        generate_asteroid_outline(&asteroids[i]);
         asteroids[i].x = asteroids[i].radius + rand() % (SCREEN_WIDTH - (int)(2 * asteroids[i].radius));
         asteroids[i].y = asteroids[i].radius + rand() % (SCREEN_HEIGHT - (int)(2 * asteroids[i].radius));
         asteroids[i].vx = 0.0f;
@@ -93,31 +107,41 @@ void spawn_asteroids(Asteroid asteroids[], int count) {
 
 void spawn_enemy(Enemy* e) {
     int side = rand() % 4; // 0 = top, 1 = right, 2 = bottom, 3 = left
+    e->vx = 0;
+    e->vy = 0;
     switch (side) {
         case 0: // Top edge
             e->x = rand() % SCREEN_WIDTH;
             e->y = -20;
+            e->vy = 0.2;
             break;
         case 1: // Right edge
             e->x = SCREEN_WIDTH+20;
             e->y = rand() % SCREEN_HEIGHT;
+            e->vx = -0.2;
             break;
         case 2: // Bottom edge
             e->x = rand() % SCREEN_WIDTH;
             e->y = SCREEN_HEIGHT + 20;
+            e->vy = -0.2;
             break;
         case 3: // Left edge
             e->x = -20;
             e->y = rand() % SCREEN_HEIGHT;
+            e->vx = 0.2;
             break;
     } 
     e->angle = 0.0f;
-    e->vx = 0;
-    e->vy = 0;
-    e->speed = 0.2f + ((float)(rand() % 100) / 100.f);
+    e->speed = 0.2f + ((float)(rand() % 100) / 100.0f);
     e->last_shot_time = SDL_GetTicks();
     e->alive = 1;
     e->jitter_angle = (float)(rand() % 628) / 100.0f;
+    if (((float)(rand() % 100) / 100.0f) < 0.8) {
+        e->type = ENEMY_SPIRAL;
+    }
+    else
+        e->type = ENEMY_BASIC;
+
 }
 
 

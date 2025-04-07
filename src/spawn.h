@@ -8,6 +8,7 @@
 #define STAR_COUNT 1000
 #define STREAK_STAR_COUNT 150
 
+void generate_asteroid_outline(Asteroid* asteroid);
 void spawn_asteroids(Asteroid asteroids[], int count);
 void spawn_asteroid(Asteroid* asteroid);
 void spawn_enemy(Enemy* enemy);
