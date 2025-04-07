@@ -160,7 +160,7 @@ void update_enemy(Enemy* enemy, const PlayerShip* player, Projectile projectiles
     float aim_mag = sqrtf(aim_dx * aim_dx + aim_dy * aim_dy);
 
     Uint32 now = SDL_GetTicks();
-    if (aim_mag > 0.1f && (now - enemy->last_shot_time) >= 600) {
+    if (aim_mag > 0.1f && (now - enemy->last_shot_time) >= 900) {
         float angle = atan2f(aim_dy, aim_dx);  // use movement vector
         spawn_projectile(projectiles, enemy->x, enemy->y, angle, 1);
         enemy->last_shot_time = now;
@@ -174,4 +174,15 @@ void update_enemies(Enemy enemies[], int ecount, const PlayerShip* player, Proje
         update_enemy(&enemies[i], player, projectiles, max_projectiles);
     }
 }
+
+void update_streak_stars(StreakStar stars[], int count) {
+    for (int i = 0; i < count; i++) {
+        stars[i].x -= stars[i].speed;
+        if (stars[i].x < 0 + stars[i].length) {
+            stars[i].x = SCREEN_WIDTH + stars[i].length;
+            stars[i].y = rand() % SCREEN_HEIGHT;
+        }
+    }
+}
+
 

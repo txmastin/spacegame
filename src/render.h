@@ -5,6 +5,7 @@
 #include "entity.h"
 
 void draw_stars(SDL_Renderer* renderer, const Star stars[], int count);
+void draw_streak_stars(SDL_Renderer* renderer, const StreakStar stars[], int count);
 void draw_player_ship(SDL_Renderer* renderer, const PlayerShip* player);
 void draw_asteroids(SDL_Renderer* renderer, Asteroid asteroids[], int count);
 void draw_projectiles(SDL_Renderer* renderer, const Projectile projectiles[], int count);

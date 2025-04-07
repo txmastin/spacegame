@@ -3,11 +3,19 @@
 
 #include <SDL2/SDL.h>
 
+
+/****** Stars ******/
 typedef struct {
     float x, y;
 } Star;
 
-// ---- Player Ship ----
+typedef struct {
+    float x, y;
+    float speed;
+    float length;
+} StreakStar;
+
+/****** Player Ship ******/
 typedef struct {
     float x, y;
     float vx, vy;
@@ -20,7 +28,7 @@ typedef struct {
     int pirates_eliminated;
 } PlayerShip;
 
-// ---- Asteroid ----
+/****** Asteroid ******/
 typedef struct {
     float x, y;
     float vx, vy;
@@ -31,7 +39,7 @@ typedef struct {
     int being_mined;
 } Asteroid;
 
-// ---- Projectile ----
+/****** Projectile ******/
 typedef struct {
     float x, y;
     float vx, vy;
@@ -40,7 +48,7 @@ typedef struct {
     int owner;
 } Projectile;
 
-// ---- Enemy ----
+/****** Enemy ******/
 typedef struct {
     float x, y;
     float vx, vy;

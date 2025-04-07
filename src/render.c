@@ -9,6 +9,16 @@ void draw_stars(SDL_Renderer* renderer, const Star stars[], int count) {
     }
 }
 
+void draw_streak_stars(SDL_Renderer* renderer, const StreakStar stars[], int count) {
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 180);
+    for (int i = 0; i < count; i++) {
+        SDL_RenderDrawLine(renderer,
+            (int)stars[i].x, (int)stars[i].y,
+            (int)(stars[i].x - stars[i].length), (int)stars[i].y);
+    }
+}
+
+
 void draw_player_ship(SDL_Renderer* renderer, const PlayerShip* player) {
     float cx = player->x + player->width / 2.0f;
     float cy = player->y + player->height / 2.0f;
@@ -133,9 +143,9 @@ void draw_projectiles(SDL_Renderer* renderer, const Projectile projectiles[], in
         }
 
         SDL_FRect rect = {
-            x - 3,  // center horizontally
-            y - 1,  // center vertically
-            6, 2
+            x - 2.5,  // center horizontally
+            y - 2.5,  // center vertically
+            5, 5
         };
         SDL_RenderFillRectF(renderer, &rect);
     }

@@ -16,6 +16,26 @@ void spawn_stars(Star stars[], int count) {
     }
 }
 
+void spawn_streak_stars(StreakStar stars[], int count) {
+    for (int i = 0; i < count; i++) {
+        stars[i].x = rand() % SCREEN_WIDTH;
+        stars[i].y = rand() % SCREEN_HEIGHT;
+
+        // 50/50 chance: short (3-5 px) or long (8-12 px)
+        int long_streak = rand() % 2;
+        if (long_streak) {
+            stars[i].length = 5 + rand() % 5;  // 8–12 px
+        } else {
+            stars[i].length = 3 + rand() % 3;  // 3–5 px
+        }
+
+        // Speed is proportional to length
+        stars[i].speed = stars[i].length * 0.3f;
+    }
+}
+
+
+
 void spawn_asteroid(Asteroid* a) {
     int edge = rand() % 4;
     float buffer = 40.0f;  // spawn just offscreen
@@ -39,13 +59,13 @@ void spawn_asteroid(Asteroid* a) {
             break;
     }
 
-    a->radius = 20 + rand() % 20;
+    a->radius = 20 + rand() % 30;
     float angle = (rand() % 360) * M_PI / 180.0f;
-    float speed = 0.2f + (rand() % (60 - (int)(a->radius))) / 100.0f;
+    float speed = 0.2f + (rand() % (70 - (int)(a->radius))) / 100.0f;
     a->vx = cosf(angle) * speed;
     a->vy = sinf(angle) * speed;
 
-    a->hits_required = (int)a->radius / 6 + 2;
+    a->hits_required = (int)a->radius / 6;
     a->hits_taken = 0;
     a->alive = 1;
     a->being_mined = 0;
@@ -54,19 +74,19 @@ void spawn_asteroid(Asteroid* a) {
 void spawn_asteroids(Asteroid asteroids[], int count) {
     srand((unsigned int)time(NULL));
 
-    for (int i = 0; i < (count-7); i++) {
-        asteroids[i].radius = 20 + rand() % 20;
+    for (int i = 0; i < (count-10); i++) {
+        asteroids[i].radius = 20 + rand() % 30;
         asteroids[i].x = asteroids[i].radius + rand() % (SCREEN_WIDTH - (int)(2 * asteroids[i].radius));
         asteroids[i].y = asteroids[i].radius + rand() % (SCREEN_HEIGHT - (int)(2 * asteroids[i].radius));
         asteroids[i].vx = 0.0f;
         asteroids[i].vy = 0.0f;
         float angle = (rand() % 360) * M_PI / 180.0f;
-        float speed = 0.2f + (rand() % (60 - (int)(asteroids[i].radius))) / 100.0f;
+        float speed = 0.2f + (rand() % (70 - (int)(asteroids[i].radius))) / 100.0f;
         asteroids[i].vx = cosf(angle) * speed;
         asteroids[i].vy = sinf(angle) * speed;
         asteroids[i].alive = 1;
         asteroids[i].hits_taken = 0;
-        asteroids[i].hits_required = (int)asteroids[i].radius / 4 + 2;
+        asteroids[i].hits_required = (int)asteroids[i].radius / 6;
         asteroids[i].being_mined = 0;
     }
 }
@@ -94,7 +114,7 @@ void spawn_enemy(Enemy* e) {
     e->angle = 0.0f;
     e->vx = 0;
     e->vy = 0;
-    e->speed = 0.5f + ((float)(rand() % 200) / 100.f);
+    e->speed = 0.2f + ((float)(rand() % 100) / 100.f);
     e->last_shot_time = SDL_GetTicks();
     e->alive = 1;
     e->jitter_angle = (float)(rand() % 628) / 100.0f;

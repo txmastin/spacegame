@@ -6,8 +6,14 @@ void spawn_projectile(Projectile projectiles[], float x, float y, float angle, i
         if (!projectiles[i].alive) {
             projectiles[i].x = x;
             projectiles[i].y = y;
-            projectiles[i].vx = cosf(angle) * 3.0f;
-            projectiles[i].vy = sinf(angle) * 3.0f;
+            if (owner == 0) { 
+                projectiles[i].vx = cosf(angle) * 3.0f;
+                projectiles[i].vy = sinf(angle) * 3.0f;
+            }
+            else {
+                projectiles[i].vx = cosf(angle) * 1.8f;
+                projectiles[i].vy = sinf(angle) * 1.8f;
+            }
             projectiles[i].angle = angle;
             projectiles[i].alive = 1;
             projectiles[i].owner = owner;

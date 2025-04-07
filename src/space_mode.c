@@ -10,6 +10,7 @@ static Asteroid asteroids[ASTEROID_COUNT];
 static Enemy enemies[ENEMY_COUNT];
 static Projectile projectiles[MAX_PROJECTILES] = {0};
 static Star stars[STAR_COUNT];
+static StreakStar streak_stars[STREAK_STAR_COUNT];
 
 static Uint32 last_enemy_spawn_time = 0;
 
@@ -42,6 +43,7 @@ void init_space_mode(PlayerShip* player) {
 
     spawn_asteroids(asteroids, ASTEROID_COUNT);
     spawn_stars(stars, STAR_COUNT);
+    spawn_streak_stars(streak_stars, STREAK_STAR_COUNT);
 }
 
 void update_space_mode(PlayerShip* player, SDL_Renderer* renderer, const Uint8* keystate, TTF_Font* font) {
@@ -56,7 +58,7 @@ void update_space_mode(PlayerShip* player, SDL_Renderer* renderer, const Uint8* 
     // Shoot
     static int last_shot = 0;
     Uint32 now = SDL_GetTicks();
-    if ((mouse_state & SDL_BUTTON(SDL_BUTTON_LEFT)) && now - last_shot > 300) {
+    if ((mouse_state & SDL_BUTTON(SDL_BUTTON_LEFT)) && now - last_shot > 150) {
         float muzzle_offset = player->width;
         float muzzle_x = cx + cosf(player->angle) * muzzle_offset;
         float muzzle_y = cy + sinf(player->angle) * muzzle_offset;
@@ -69,7 +71,7 @@ void update_space_mode(PlayerShip* player, SDL_Renderer* renderer, const Uint8* 
     for (int i = 0; i < ENEMY_COUNT; i++)
         if (enemies[i].alive) enemies_alive++;
 
-    if (now - last_enemy_spawn_time > 10000 && enemies_alive < ENEMY_COUNT) {
+    if (now - last_enemy_spawn_time > 5000 && enemies_alive < ENEMY_COUNT) {
         for (int i = 0; i < ENEMY_COUNT; i++) {
             if (!enemies[i].alive) {
                 spawn_enemy(&enemies[i]);
@@ -94,8 +96,10 @@ void update_space_mode(PlayerShip* player, SDL_Renderer* renderer, const Uint8* 
     update_projectiles(projectiles, MAX_PROJECTILES);
     handle_collisions(player, projectiles, MAX_PROJECTILES, asteroids, ASTEROID_COUNT, enemies, ENEMY_COUNT, now);
     update_asteroids(asteroids, ASTEROID_COUNT);
+    update_streak_stars(streak_stars, STREAK_STAR_COUNT);
 
     draw_stars(renderer, stars, STAR_COUNT);
+    draw_streak_stars(renderer, streak_stars, STREAK_STAR_COUNT);
     draw_player_ship(renderer, player);
     draw_asteroids(renderer, asteroids, ASTEROID_COUNT);
     draw_enemies(renderer, enemies, ENEMY_COUNT);
