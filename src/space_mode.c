@@ -71,7 +71,7 @@ void update_space_mode(PlayerShip* player, SDL_Renderer* renderer, const Uint8* 
     for (int i = 0; i < ENEMY_COUNT; i++)
         if (enemies[i].alive) enemies_alive++;
 
-    if (now - last_enemy_spawn_time > 5000 && enemies_alive < ENEMY_COUNT) {
+    if (now - last_enemy_spawn_time > 8000 && enemies_alive < ENEMY_COUNT) {
         for (int i = 0; i < ENEMY_COUNT; i++) {
             if (!enemies[i].alive) {
                 spawn_enemy(&enemies[i]);

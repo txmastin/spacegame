@@ -113,22 +113,22 @@ void spawn_enemy(Enemy* e) {
         case 0: // Top edge
             e->x = rand() % SCREEN_WIDTH;
             e->y = -20;
-            e->vy = 0.2;
+            e->vy = 0.4;
             break;
         case 1: // Right edge
             e->x = SCREEN_WIDTH+20;
             e->y = rand() % SCREEN_HEIGHT;
-            e->vx = -0.2;
+            e->vx = -0.4;
             break;
         case 2: // Bottom edge
             e->x = rand() % SCREEN_WIDTH;
             e->y = SCREEN_HEIGHT + 20;
-            e->vy = -0.2;
+            e->vy = -0.4;
             break;
         case 3: // Left edge
             e->x = -20;
             e->y = rand() % SCREEN_HEIGHT;
-            e->vx = 0.2;
+            e->vx = 0.4;
             break;
     } 
     e->angle = 0.0f;
